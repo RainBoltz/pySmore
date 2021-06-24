@@ -2,13 +2,12 @@
 
 - DEVELOPING...
 - Original C++ version: [SMORe](https://github.com/cnclabs/smore)
-- featured [DGL](https://github.com/dmlc/dgl/) !
 
 ## Feature checklist:
 - [x] MF (**M**atrix **F**actorization)
 - [x] BPR (**B**ayesian **P**ersonalized **R**anking)
   - [BPR: Bayesian personalized ranking from implicit feedback](https://dl.acm.org/citation.cfm?id=1795167)
-- [x] LINE(**L**arge-scale **I**nformation **N**etwork **E**mbedding)
+- [ ] LINE(**L**arge-scale **I**nformation **N**etwork **E**mbedding)
   - [LINE: Large-scale Information Network Embedding](http://dl.acm.org/citation.cfm?id=2741093)
 - [ ] DeepWalk
   - [DeepWalk: online learning of social representations](http://dl.acm.org/citation.cfm?id=2623732)
