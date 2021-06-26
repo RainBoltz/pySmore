@@ -52,12 +52,12 @@ def learner():
 
 
 ### user functions ###
-def create_graph(train_path, embedding_dimension=64):
+def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
     global globalVariables
     global userEmbed
     global itemEmbed
 
-    globalVariables['graph'] = graph.Graph(train_path, mode='edge')
+    globalVariables['graph'] = graph.Graph(train_path, delimiter=delimiter, mode='edge')
 
     print('create embeddings...', end='', flush=True)
     userEmbed = embedding.create_embeddings_unsafe(

@@ -57,7 +57,7 @@ trainer.save_embeddings(file_prefix="mf")
 ```
 
 ## Task
-Given a network input (split by `\t`):
+Given a network input:
 ```txt
 userA	itemA	3
 userA	itemC	5
