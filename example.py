@@ -16,7 +16,7 @@ trainer.set_param({
 
 # Start training!
 # Noted that `update_times` will be multiplied by 1 million
-trainer.train(update_times=1e-4, workers=4)
+trainer.train(update_times=0.05, workers=4)
 
 # output the embeddings
 # Note that it will generate four files:
