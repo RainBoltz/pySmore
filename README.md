@@ -32,46 +32,43 @@ python3 example.py
 
 ## Get started
 ```python
-import torch as th
-from pysmore.model import mf
+from pysmore import models
 
-# select your device (optional)
-# it depends on the pytorch version you installed
-DEVICE = th.device("cpu")
+# Choose a graph embedding method
+trainer = models.MF
 
-# initialize graph
-G = mf.Graph(device=DEVICE)
+# Create a graph with given user-item interaction data
+trainer.create_graph("data/ui.train.txt", embedding_dimension=6)
 
-# create graph with DGL
-G.create_graph("ui.train.txt", embedding_size=5)
+# Pass the parameters that you'd like for training!
+trainer.set_param({
+    'init_lr':  0.025,  # initial learning rate
+    'l2_reg':   0.01    # L2-Regularize ratio
+})
 
-# you can modify the DGLGraph by calling `G.graph`
-# ex. add more NN layers to the graph, etc.
-
-# start training!
+# Start training!
 # Noted that `update_times` will be multiplied by 1 million
-G.train(update_times=1e-4, batch_size=1, neg_n=0)
+trainer.train(update_times=1e-4, workers=4)
 
-# output the embeddings
-G.save_embeddings("mf.rep")
+# Afterwards, output the embeddings.
+trainer.save_embeddings(file_prefix="mf")
 ```
 
 ## Task
-Given a network input:
+Given a network input (split by `\t`):
 ```txt
-userA itemA 3
-userA itemC 5
-userB itemA 1
-userB itemB 5
-userC itemA 4
+userA	itemA	3
+userA	itemC	5
+userB	itemA	1
+userB	itemB	5
+userC	itemA	4
 ```
 The model learns the representations of each vertex:
 ```
-6 5
-userA 0.0815412 0.0205459 0.288714 0.296497 0.394043
-itemA -0.207083 -0.258583 0.233185 0.0959801 0.258183
-itemC 0.0185886 0.138003 0.213609 0.276383 0.45732
-userB -0.0137994 -0.227462 0.103224 -0.456051 0.389858
-itemB -0.317921 -0.163652 0.103891 -0.449869 0.318225
-userC -0.156576 -0.3505 0.213454 0.10476 0.259673
+userA 0.45947249 0.50407268 -0.48727296 0.17812133 -0.12710278 -0.32385066
+itemA 0.43970733 0.50159092 -0.47445659 0.17394969 -0.10405107 -0.30718780
+itemC -0.06104707 -0.02211397 0.03871192 0.01201094 0.18371690 0.01444941
+userB -0.51468509 0.25420145 0.08170974 0.07961795 0.39588787 0.42408562
+itemB -0.57684131 0.28458484 0.09723139 0.10464700 0.51066395 0.46714100
+userC -0.31679640 0.17126887 0.04893538 0.08118480 0.38689152 0.24092283
 ```
