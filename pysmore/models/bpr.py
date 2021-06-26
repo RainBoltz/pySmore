@@ -23,6 +23,7 @@ itemEmbed =             None
 def learner():
     globalVariables['graph'].cache_edge_samples(globalVariables['worker_update_times'])
     globalVariables['progress'](0.0)
+    _learning_rate = globalVariables['init_lr']
     for i in range(1, globalVariables['worker_update_times']+1):
         user, user_idx, item_pos, item_pos_idx, weight = \
             globalVariables['graph'].draw_an_edge_from_sample()
@@ -38,14 +39,14 @@ def learner():
                 globalVariables['optimizer'](user_embedding, item_pos_embedding, item_neg_embedding)
             
             current_progress_percentage = current_update_times.value / globalVariables['total_update_times']
-            learning_rate = globalVariables['init_lr'] * (1.0 - current_progress_percentage)
-            learning_rate = max(globalVariables['min_lr'], learning_rate)
-            globalVariables['updater'](userEmbed, user_idx, user_loss, learning_rate, globalVariables['l2_reg'])
-            globalVariables['updater'](itemEmbed, item_pos_idx, item_pos_loss, learning_rate, globalVariables['l2_reg'])
-            globalVariables['updater'](itemEmbed, item_neg_idx, item_neg_loss, learning_rate, globalVariables['l2_reg'])
+            globalVariables['updater'](userEmbed, user_idx, user_loss, _learning_rate, globalVariables['l2_reg'])
+            globalVariables['updater'](itemEmbed, item_pos_idx, item_pos_loss, _learning_rate, globalVariables['l2_reg'])
+            globalVariables['updater'](itemEmbed, item_neg_idx, item_neg_loss, _learning_rate, globalVariables['l2_reg'])
 
         monitor_flag = int(1e3)
         if i % monitor_flag == 0:
+            _learning_rate = globalVariables['init_lr'] * (1.0 - current_progress_percentage)
+            _learning_rate = max(globalVariables['min_lr'], _learning_rate)
             current_update_times.value += monitor_flag
             globalVariables['progress'](current_progress_percentage)
 ######
