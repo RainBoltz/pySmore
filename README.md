@@ -32,10 +32,11 @@ python3 example.py
 
 ## Get started
 ```python
-from pysmore import models
+import pysmore.models.mf as MF
+import pysmore.models.bpr as BPR
 
 # Choose a graph embedding method
-trainer = models.MF
+trainer = MF  # or BPR
 
 # Create a graph with given user-item interaction data
 trainer.create_graph("data/ui.train.txt", embedding_dimension=6)
