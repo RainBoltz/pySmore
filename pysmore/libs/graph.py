@@ -1,4 +1,4 @@
-from libs.util import graph_reader_generator
+from pysmore.libs.util import graph_reader_generator
 import numpy as np
 from collections import deque
 from tqdm import tqdm, trange

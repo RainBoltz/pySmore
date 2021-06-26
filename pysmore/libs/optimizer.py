@@ -1,5 +1,5 @@
 import numpy as np
-from libs.util import fast_sigmoid
+from pysmore.libs.util import fast_sigmoid
 
 def get_dotproduct_loss(from_embedding, to_embedding, weight):
     weight = float(weight)

@@ -1,4 +1,4 @@
-from libs import graph, optimizer, embedding, util
+from pysmore.libs import graph, optimizer, embedding, util
 import multiprocessing as mp
 
 # main learner
