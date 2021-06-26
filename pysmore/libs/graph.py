@@ -148,6 +148,11 @@ class Graph:
         item = self._items[item_idx]
         return item, item_idx
 
+    def draw_items_uniformly(self, amount=5):
+        item_idxs = self._fast_choice(self._item_idx_range, amount=amount)
+        items = [ self._items[item_idx] for item_idx in item_idxs ]
+        return items, item_idxs
+
     def draw_an_edge(self):
         edge_idx = self._fast_choice(self._edge_idx_range)[0]
         user, item, weight = self._graph[edge_idx]

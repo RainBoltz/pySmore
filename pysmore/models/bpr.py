@@ -28,9 +28,8 @@ def learner():
         user, user_idx, item_pos, item_pos_idx, weight = \
             globalVariables['graph'].draw_an_edge_from_sample()
 
-        for j in range(globalVariables['n_neg']):
-            item_neg, item_neg_idx = globalVariables['graph'].draw_an_item_uniformly()
-
+        item_neg, item_neg_idxs = globalVariables['graph'].draw_items_uniformly(amount=globalVariables['n_neg'])
+        for item_neg_idx in item_neg_idxs:
             user_embedding = userEmbed[user_idx]
             item_pos_embedding = itemEmbed[item_pos_idx]
             item_neg_embedding = itemEmbed[item_neg_idx]
