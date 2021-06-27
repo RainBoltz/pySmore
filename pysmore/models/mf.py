@@ -61,6 +61,8 @@ def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
         dimensions=embedding_dimension)
     print('DONE', flush=True)
 
+    return userEmbed, itemEmbed
+
 def set_param(params):
     global globalVariables
     for key in params:
