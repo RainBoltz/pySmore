@@ -8,9 +8,8 @@ globalVariables = {
     'updater':      embedding.update_l2_embedding,
     'progress':     util.print_progress,
     'l2_reg':       0.0001,
-    'init_lr':      0.025,
-    'min_lr':       0.025 * 1e-4,
-    'n_neg':        5
+    'init_alpha':   0.025,
+    'num_negative': 5
 }
 
 current_update_times =  mp.RawValue('i', 0)
@@ -23,12 +22,12 @@ itemEmbed =             None
 def learner():
     globalVariables['graph'].cache_edge_samples(globalVariables['worker_update_times'])
     globalVariables['progress'](0.0)
-    _learning_rate = globalVariables['init_lr']
+    _learning_rate = globalVariables['init_alpha']
     for i in range(1, globalVariables['worker_update_times']+1):
         user, user_idx, item_pos, item_pos_idx, weight = \
             globalVariables['graph'].draw_an_edge_from_sample()
 
-        item_neg, item_neg_idxs = globalVariables['graph'].draw_items_uniformly(amount=globalVariables['n_neg'])
+        item_neg, item_neg_idxs = globalVariables['graph'].draw_contexts_uniformly(amount=globalVariables['num_negative'])
         for item_neg_idx in item_neg_idxs:
             user_embedding = userEmbed[user_idx]
             item_pos_embedding = itemEmbed[item_pos_idx]
@@ -44,8 +43,8 @@ def learner():
 
         monitor_flag = int(1e3)
         if i % monitor_flag == 0:
-            _learning_rate = globalVariables['init_lr'] * (1.0 - current_progress_percentage)
-            _learning_rate = max(globalVariables['min_lr'], _learning_rate)
+            _learning_rate = globalVariables['init_alpha'] * (1.0 - current_progress_percentage)
+            _learning_rate = max(globalVariables['min_alpha'], _learning_rate)
             current_update_times.value += monitor_flag
             globalVariables['progress'](current_progress_percentage)
 ######
@@ -61,10 +60,10 @@ def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
 
     print('create embeddings...', end='', flush=True)
     userEmbed = embedding.create_embeddings_unsafe(
-        amount=globalVariables['graph'].user_count,
+        amount=globalVariables['graph'].vertex_count,
         dimensions=embedding_dimension)
     itemEmbed = embedding.create_embeddings_unsafe(
-        amount=globalVariables['graph'].item_count,
+        amount=globalVariables['graph'].context_count,
         dimensions=embedding_dimension)
     print('DONE', flush=True)
 
@@ -78,7 +77,7 @@ def train(update_times=10, workers=1):
     globalVariables['total_update_times'] = int(update_times * 1000000)
     globalVariables['workers'] = workers
     globalVariables['worker_update_times'] = int((update_times * 1000000)/workers)
-    globalVariables['min_lr'] = globalVariables['init_lr'] * 1000 / globalVariables['total_update_times']
+    globalVariables['min_alpha'] = globalVariables['init_alpha'] * 1000 / globalVariables['total_update_times']
 
     util.optimize_numpy_multiprocessing(workers)
 
@@ -97,6 +96,6 @@ def save_embeddings(file_prefix="bpr"):
     global userEmbed
     global itemEmbed
     print()
-    embedding.save_embeddings(userEmbed, globalVariables['graph'].users, file_prefix+'_users')
-    embedding.save_embeddings(itemEmbed, globalVariables['graph'].items, file_prefix+'_items')
+    embedding.save_embeddings(userEmbed, globalVariables['graph'].vertices, file_prefix+'_users')
+    embedding.save_embeddings(itemEmbed, globalVariables['graph'].contexts, file_prefix+'_items')
 ######
