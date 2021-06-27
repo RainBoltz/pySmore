@@ -1,6 +1,6 @@
 # pySmore
 
-- DEVELOPING...
+- **IN DEVELOPMENT**, Currently runs in 40% the speed of Original C++ version
 - Original C++ version: [SMORe](https://github.com/cnclabs/smore)
 
 ## Feature checklist:
