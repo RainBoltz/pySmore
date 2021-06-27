@@ -1,5 +1,6 @@
 import os
 import math
+from numba import jit
 
 SIGMOID_TABLE_SIZE = 1000
 MAX_SIGMOID = 8.0
@@ -22,6 +23,16 @@ def optimize_numpy_multiprocessing(worker_amount):
         os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
         os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
+@jit(nopython=True, fastmath=True)
+def fast_sigmoid(x):
+    if x < -8.0:
+        return 0.0
+    elif x > 8.0:
+        return 1.0
+    else:
+        return 1.0 / (1.0 + math.exp(-x))
+    
+'''
 def fast_sigmoid(x):
     global MAX_SIGMOID
     global SIGMOID_TABLE_SIZE
@@ -33,6 +44,7 @@ def fast_sigmoid(x):
         return 1.0
     else:
         return SIGMOID_TABLE[ int((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2) ]
+'''
 
 def print_progress(percentage):
     print('progress: %.2f%c'%(percentage*100,'%'), end='\r', flush=True)

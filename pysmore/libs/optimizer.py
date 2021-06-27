@@ -1,6 +1,8 @@
 import numpy as np
 from pysmore.libs.util import fast_sigmoid
+from numba import jit
 
+@jit(nopython=True, fastmath=True)
 def get_dotproduct_loss(from_embedding, to_embedding, weight):
     weight = float(weight)
     prediction = np.dot(from_embedding, to_embedding.T)
@@ -11,6 +13,7 @@ def get_dotproduct_loss(from_embedding, to_embedding, weight):
 
     return from_loss, to_loss
 
+@jit(nopython=True, fastmath=True)
 def get_loglikelihood_loss(from_embedding, to_embedding, weight):
     weight = float(weight)
     prediction = np.dot(from_embedding, to_embedding.T)
@@ -21,6 +24,7 @@ def get_loglikelihood_loss(from_embedding, to_embedding, weight):
     
     return from_loss, to_loss
 
+@jit(nopython=True, fastmath=True)
 def get_margin_bpr_loss(from_embedding, to_embedding_pos, to_embedding_neg, margin=8.0):
     diff_to_embedding = to_embedding_pos - to_embedding_neg
     prediction = np.dot(from_embedding, diff_to_embedding.T) - margin
@@ -32,7 +36,7 @@ def get_margin_bpr_loss(from_embedding, to_embedding_pos, to_embedding_neg, marg
     
     return from_loss, to_loss_pos, to_loss_neg
 
-
+@jit(nopython=True, fastmath=True)
 def get_bpr_loss(from_embedding, to_embedding_pos, to_embedding_neg):
     diff_to_embedding = to_embedding_pos - to_embedding_neg
     prediction = np.dot(from_embedding, diff_to_embedding.T)
@@ -45,6 +49,7 @@ def get_bpr_loss(from_embedding, to_embedding_pos, to_embedding_neg):
     return from_loss, to_loss_pos, to_loss_neg
 
 #TODO
+@jit(nopython=True, fastmath=True)
 def get_convolutional_loss(from_embedding, to_embedding_pos, to_embedding_negs, margin=8.0):
     diff_to_embedding = to_embedding_pos - to_embedding_negs
     prediction = np.dot(from_embedding, diff_to_embedding.T) - margin
