@@ -34,7 +34,7 @@ def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
         dimensions=embedding_dimension)
     print('DONE', flush=True)
 
-    return vertexEmbed, contextEmbed
+    return vertexEmbed, globalVariables['graph'].vertex_mapper
 
 def set_param(params):
     global globalVariables

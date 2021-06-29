@@ -123,6 +123,14 @@ class Graph:
     def contexts(self):
         return self._contexts
 
+    @property
+    def vertex_mapper(self):
+        return self._vertex_idxs
+
+    @property
+    def context_mapper(self):
+        return self._context_idxs
+
     
     def initialize_random_state(self, seed=None):
         if not seed:

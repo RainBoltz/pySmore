@@ -37,7 +37,7 @@ def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
         dimensions=embedding_dimension)
     print('DONE', flush=True)
 
-    return vertexEmbed, contextEmbed
+    return vertexEmbed, globalVariables['graph'].vertex_mapper
 
 def set_param(params):
     global globalVariables
@@ -79,7 +79,7 @@ def save_embeddings(file_prefix="deepwalk"):
 def learner(vertex_range):
     
     globalVariables['progress'](0.0)
-    monitor_flag = int(1e4)
+    monitor_flag = int(1e2)
     _learning_rate = globalVariables['init_alpha']
     vertex_index_start, vertex_index_end = vertex_range
 
@@ -117,7 +117,7 @@ def learner(vertex_range):
                 globalVariables['updater'](vertexEmbed, vertex_idx, vertex_loss, _learning_rate, globalVariables['l2_reg'])
             
 
-            if (i-vertex_index_start) % monitor_flag == 0:
+            if (i-vertex_index_start+1) % monitor_flag == 0:
                 current_progress_percentage = current_update_times.value / globalVariables['total_update_times']
                 _learning_rate = globalVariables['init_alpha'] * (1.0 - current_progress_percentage)
                 _learning_rate = max(globalVariables['min_alpha'], _learning_rate)
