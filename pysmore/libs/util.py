@@ -30,7 +30,7 @@ def fast_sigmoid(x):
 
 
 def print_progress(percentage):
-    print('progress: %.2f%c'%(percentage*100,'%'), end='\r', flush=True)
+    print('progress: %.4f%c'%(percentage*100,'%'), end='\r', flush=True)
 
 def turn_on_debug_mode():
     import multiprocessing
