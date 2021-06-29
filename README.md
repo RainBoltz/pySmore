@@ -1,15 +1,15 @@
 # pySmore
 
-- **IN DEVELOPMENT**, Currently runs in 40% the speed of Original C++ version
+- **WARNING**: currently it runs in 40% the speed of Original C++ version, but provides better experience of compatibility with Python scripts.
 - Original C++ version: [SMORe](https://github.com/cnclabs/smore)
 
 ## Feature checklist:
 - [x] MF (**M**atrix **F**actorization)
 - [x] BPR (**B**ayesian **P**ersonalized **R**anking)
   - [BPR: Bayesian personalized ranking from implicit feedback](https://dl.acm.org/citation.cfm?id=1795167)
-- [ ] LINE(**L**arge-scale **I**nformation **N**etwork **E**mbedding)
+- [x] LINE(**L**arge-scale **I**nformation **N**etwork **E**mbedding)
   - [LINE: Large-scale Information Network Embedding](http://dl.acm.org/citation.cfm?id=2741093)
-- [ ] DeepWalk
+- [x] DeepWalk
   - [DeepWalk: online learning of social representations](http://dl.acm.org/citation.cfm?id=2623732)
 - [ ] Walklets
   - [Don't Walk, Skip! Online Learning of Multi-scale Network Embeddings](https://arxiv.org/abs/1605.02115) 
@@ -35,9 +35,10 @@ python3 example.py
 ```python
 import pysmore.models.mf as MF
 import pysmore.models.bpr as BPR
+import pysmore.models.line as LINE
 
 # Choose a graph embedding method
-trainer = MF  # or BPR
+trainer = BPR  # or MF, LINE
 
 # Create a graph with given user-item interaction data
 trainer.create_graph("data/ui.train.txt", embedding_dimension=6)
@@ -50,10 +51,11 @@ trainer.set_param({
 
 # Start training!
 # Noted that `update_times` will be multiplied by 1 million
+# `workers` is the amount of process to use, NOT THREADS
 trainer.train(update_times=1e-4, workers=4)
 
 # Afterwards, output the embeddings.
-trainer.save_embeddings(file_prefix="mf")
+trainer.save_embeddings(file_prefix="bpr")
 ```
 
 ## Task
