@@ -18,38 +18,6 @@ itemEmbed =             None
 ######
 
 
-### main learner ###
-def learner():
-    globalVariables['graph'].cache_edge_samples(globalVariables['worker_update_times'])
-    globalVariables['progress'](0.0)
-    _learning_rate = globalVariables['init_alpha']
-    for i in range(1, globalVariables['worker_update_times']+1):
-        user, user_idx, item_pos, item_pos_idx, weight = \
-            globalVariables['graph'].draw_an_edge_from_sample()
-
-        item_neg, item_neg_idxs = globalVariables['graph'].draw_contexts_uniformly(amount=globalVariables['num_negative'])
-        for item_neg_idx in item_neg_idxs:
-            user_embedding = userEmbed[user_idx]
-            item_pos_embedding = itemEmbed[item_pos_idx]
-            item_neg_embedding = itemEmbed[item_neg_idx]
-
-            user_loss, item_pos_loss, item_neg_loss = \
-                globalVariables['optimizer'](user_embedding, item_pos_embedding, item_neg_embedding)
-            
-            current_progress_percentage = current_update_times.value / globalVariables['total_update_times']
-            globalVariables['updater'](userEmbed, user_idx, user_loss, _learning_rate, globalVariables['l2_reg'])
-            globalVariables['updater'](itemEmbed, item_pos_idx, item_pos_loss, _learning_rate, globalVariables['l2_reg'])
-            globalVariables['updater'](itemEmbed, item_neg_idx, item_neg_loss, _learning_rate, globalVariables['l2_reg'])
-
-        monitor_flag = int(1e3)
-        if i % monitor_flag == 0:
-            _learning_rate = globalVariables['init_alpha'] * (1.0 - current_progress_percentage)
-            _learning_rate = max(globalVariables['min_alpha'], _learning_rate)
-            current_update_times.value += monitor_flag
-            globalVariables['progress'](current_progress_percentage)
-######
-
-
 ### user functions ###
 def create_graph(train_path, embedding_dimension=64, delimiter='\t'):
     global globalVariables
@@ -98,6 +66,38 @@ def save_embeddings(file_prefix="bpr"):
     global userEmbed
     global itemEmbed
     print()
-    embedding.save_embeddings(userEmbed, globalVariables['graph'].vertices, file_prefix+'_users')
-    embedding.save_embeddings(itemEmbed, globalVariables['graph'].contexts, file_prefix+'_items')
+    embedding.save_embeddings(userEmbed, globalVariables['graph'].vertices, file_prefix+'_vertex')
+    embedding.save_embeddings(itemEmbed, globalVariables['graph'].contexts, file_prefix+'_context')
+######
+
+
+### main learner ###
+def learner():
+    globalVariables['graph'].cache_edge_samples(globalVariables['worker_update_times'])
+    globalVariables['progress'](0.0)
+    monitor_flag = int(1e3)
+    _learning_rate = globalVariables['init_alpha']
+    for i in range(1, globalVariables['worker_update_times']+1):
+        user, user_idx, item_pos, item_pos_idx, weight = \
+            globalVariables['graph'].draw_an_edge_from_sample()
+
+        item_neg, item_neg_idxs = globalVariables['graph'].draw_contexts_uniformly(amount=globalVariables['num_negative'])
+        for item_neg_idx in item_neg_idxs:
+            user_embedding = userEmbed[user_idx]
+            item_pos_embedding = itemEmbed[item_pos_idx]  # should resample positive context everytime
+            item_neg_embedding = itemEmbed[item_neg_idx]
+
+            user_loss, item_pos_loss, item_neg_loss = \
+                globalVariables['optimizer'](user_embedding, item_pos_embedding, item_neg_embedding)
+            
+            globalVariables['updater'](userEmbed, user_idx, user_loss, _learning_rate, globalVariables['l2_reg'])
+            globalVariables['updater'](itemEmbed, item_pos_idx, item_pos_loss, _learning_rate, globalVariables['l2_reg'])
+            globalVariables['updater'](itemEmbed, item_neg_idx, item_neg_loss, _learning_rate, globalVariables['l2_reg'])
+
+        if i % monitor_flag == 0:
+            current_progress_percentage = current_update_times.value / globalVariables['total_update_times']
+            _learning_rate = globalVariables['init_alpha'] * (1.0 - current_progress_percentage)
+            _learning_rate = max(globalVariables['min_alpha'], _learning_rate)
+            current_update_times.value += monitor_flag
+            globalVariables['progress'](current_progress_percentage)
 ######
